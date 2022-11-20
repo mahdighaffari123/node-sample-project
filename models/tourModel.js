@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+// const User = require('./userModel');
 const tourSchema = mongoose.Schema(
   {
     name: {
@@ -71,6 +72,39 @@ const tourSchema = mongoose.Schema(
       select: false,
     },
     startDates: [Date],
+    startLocation: {
+      //GeoJson
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point',
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          enum: ['Point'],
+          default: 'Point',
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    // Embedding way of implementing tour guides
+    // guides: Array,
+    guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+    // reviews: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Review',
+    //   },
+    // ],
   },
   {
     toJSON: { virtuals: true },
@@ -81,6 +115,27 @@ const tourSchema = mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__V -passwordChangedAt',
+  });
+  next();
+});
+
+// Get tour guide in embedding way
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
