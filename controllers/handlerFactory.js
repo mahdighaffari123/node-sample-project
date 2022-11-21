@@ -28,7 +28,7 @@ exports.updateOne = (model) =>
     }
 
     res.status(201).json({
-      status: 'succss',
+      status: 'success',
       data: document,
     });
   });
@@ -37,7 +37,7 @@ exports.createOne = (model) =>
   catchAsync(async (req, res, next) => {
     const doc = await model.create(req.body);
     res.status(201).json({
-      status: 'succss',
+      status: 'success',
       data: {
         data: doc,
       },
@@ -72,6 +72,7 @@ exports.getAll = (model) =>
       .sort()
       .limitFields()
       .pagination();
+    // const docs = await features.query.explain();
     const docs = await features.query;
 
     // 3) SEND RESPONSE

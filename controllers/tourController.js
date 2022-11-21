@@ -39,7 +39,7 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
   ]);
 
   res.status(201).json({
-    status: 'succss',
+    status: 'success',
     data: {
       stats,
     },
