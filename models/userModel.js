@@ -19,7 +19,10 @@ const userSchema = Mongoose.Schema({
     enum: ['user', 'lead-guide', 'guide', 'admin'],
     default: 'user',
   },
-  photo: String,
+  photo: {
+    type: String,
+    default: 'default.jpg',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
